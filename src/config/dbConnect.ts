@@ -6,15 +6,6 @@ declare global {
       conn: typeof _mongoose | null;
    };
 }
-
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-   throw new Error(
-      'Please define the MONGODB_URI environment variable inside .env.local'
-   );
-}
-
 /**
  * Global is used here to maintain a cached connection across hot reloads
  * in development. This prevents connections from growing exponentially
@@ -26,7 +17,7 @@ if (!cached) {
    cached = global.mongoose = { conn: null, promise: null };
 }
 
-async function dbConnect() {
+async function dbConnect(dbURI: string) {
    if (cached.conn) {
       return cached.conn;
    }
@@ -36,7 +27,7 @@ async function dbConnect() {
          bufferCommands: false,
       };
 
-      cached.promise = connect(MONGODB_URI!, opts).then((mongoose) => {
+      cached.promise = connect(dbURI!, opts).then((mongoose) => {
          return mongoose;
       });
    }
