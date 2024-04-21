@@ -1,10 +1,17 @@
 import { Router } from "express";
+import { createFriendRequest, updateFriendRequest } from "../controllers/friendshipController";
 
 const router = Router();
 
 // create one
-router.post('/', (req, res) => {
-   res.status(200).json({ message: 'users get ok' });
+router.post('/', async (req, res) => {
+   try {
+      const body = req.body;
+      const newFriendRequest = await createFriendRequest(body);
+      res.status(200).json(newFriendRequest);
+   } catch (error) {
+      res.status(400).json(error);
+   }
 })
 // get all
 router.get('/', (req, res) => {
@@ -15,8 +22,19 @@ router.get('/:id', (req, res) => {
    res.status(200).json({ message: 'users get ok' });
 })
 // update one by id
-router.put('/:id', (req, res) => {
-   res.status(200).json({ message: 'users get ok' });
+router.put('/:id', async (req, res) => {
+   try {
+      const { id } = req.params;
+      if (typeof id !== 'string') {
+         // Handle the error or convert the type
+         return res.status(400).send('Invalid parameter. Id should be a string.');
+      }
+      const { status } = req.body;
+      const updatedRequest = await updateFriendRequest(id, status);
+      res.status(200).json(updatedRequest);
+   } catch (error) {
+      res.status(400).json(error);
+   }
 })
 // delete one by id
 router.delete('/:id', (req, res) => {
