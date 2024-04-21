@@ -10,7 +10,7 @@ router.post('/', async (req, res) => {
       const newFriendRequest = await createFriendRequest(body);
       res.status(200).json(newFriendRequest);
    } catch (error) {
-      res.status(400).json(error);
+      res.status(400).json({ error: (error as Error).message });
    }
 })
 // get all
@@ -33,7 +33,7 @@ router.put('/:id', async (req, res) => {
       const updatedRequest = await updateFriendRequest(id, status);
       res.status(200).json(updatedRequest);
    } catch (error) {
-      res.status(400).json(error);
+      res.status(400).json({ error: (error as Error).message });
    }
 })
 // delete one by id

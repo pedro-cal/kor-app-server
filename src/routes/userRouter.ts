@@ -10,7 +10,7 @@ router.post('/', async (req, res) => {
       const newUser = await createUser({ username, email, imgUrl });
       res.status(201).json(newUser);
    } catch (error) {
-      res.status(400).json({ error });
+      res.status(400).json({ error: (error as Error).message });
    }
 })
 // batch create users
@@ -20,13 +20,17 @@ router.post('/batch', async (req, res) => {
       const newUsers = await batchCreateUsers(users);
       res.status(201).json(newUsers);
    } catch (error) {
-      res.status(400).json({ error });
+      res.status(400).json({ error: (error as Error).message });
    }
 })
 // get all users
 router.get('/', async (req, res) => {
-   const allUsers = await fetchAllUsers();
-   res.status(200).json(allUsers);
+   try {
+      const allUsers = await fetchAllUsers();
+      res.status(200).json(allUsers);
+   } catch (error) {
+      res.status(400).json({ error: (error as Error).message });
+   }
 })
 // get user by id
 // router.get('/:id', (req, res) => {
@@ -35,14 +39,18 @@ router.get('/', async (req, res) => {
 
 // update user by id
 router.put('/status/:id', async (req, res) => {
-   const id = req.query;
-   if (typeof id !== 'string') {
-      // Handle the error or convert the type
-      return res.status(400).send('Invalid parameter. Id should be a string.');
+   try {
+      const id = req.query;
+      if (typeof id !== 'string') {
+         // Handle the error or convert the type
+         return res.status(400).send('Invalid parameter. Id should be a string.');
+      }
+      const { status } = req.body;
+      const updatedUser = await updateUserStatus(id, status);
+      res.status(200).json(updatedUser);
+   } catch (error) {
+      res.status(400).json({ error: (error as Error).message });
    }
-   const { status } = req.body;
-   const updatedUser = await updateUserStatus(id, status);
-   res.status(200).json(updatedUser);
 })
 // delete user by id
 // router.delete('/:id', (req, res) => {
