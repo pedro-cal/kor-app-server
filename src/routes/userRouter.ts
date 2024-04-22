@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createUser, fetchAllUsers, batchCreateUsers, updateUserStatus } from "../controllers/userController";
+import { signUser, fetchAllUsers, batchCreateUsers, updateUserStatus } from "../controllers/userController";
 
 const router = Router();
 
@@ -7,7 +7,8 @@ const router = Router();
 router.post('/', async (req, res) => {
    const { username, email, imgUrl } = req.body;
    try {
-      const newUser = await createUser({ username, email, imgUrl });
+      const newUser = await signUser({ username, email, imgUrl });
+      console.log("🚀 ~ router.post ~ newUser:", newUser)
       res.status(201).json(newUser);
    } catch (error) {
       res.status(400).json({ error: (error as Error).message });
@@ -27,6 +28,7 @@ router.post('/batch', async (req, res) => {
 router.get('/', async (req, res) => {
    try {
       const allUsers = await fetchAllUsers();
+      console.log("🚀 ~ router.get ~ allUsers:", allUsers)
       res.status(200).json(allUsers);
    } catch (error) {
       res.status(400).json({ error: (error as Error).message });
@@ -40,7 +42,8 @@ router.get('/', async (req, res) => {
 // update user by id
 router.put('/status/:id', async (req, res) => {
    try {
-      const id = req.query;
+      const { id } = req.params;
+      console.log("🚀 ~ router.put ~ id:", id)
       if (typeof id !== 'string') {
          // Handle the error or convert the type
          return res.status(400).send('Invalid parameter. Id should be a string.');

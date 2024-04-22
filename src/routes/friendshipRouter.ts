@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createFriendRequest, updateFriendRequest } from "../controllers/friendshipController";
+import { createFriendRequest, fetchUserFriendships, updateFriendRequest } from "../controllers/friendshipController";
 
 const router = Router();
 
@@ -14,8 +14,14 @@ router.post('/', async (req, res) => {
    }
 })
 // get all
-router.get('/', (req, res) => {
-   res.status(200).json({ message: 'users get ok' });
+router.get('/:id', async (req, res) => {
+   const { id } = req.params;
+   if (typeof id !== 'string') {
+      // Handle the error or convert the type
+      return res.status(400).send('Invalid parameter. Id should be a string.');
+   }
+   const userConnections = await fetchUserFriendships(id);
+   res.status(200).json(userConnections);
 })
 // get one by id
 router.get('/:id', (req, res) => {

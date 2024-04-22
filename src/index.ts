@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import cors from 'cors';
 import mainRouter from './routes';
 import dbConnect from './config/dbConnect';
 
@@ -15,7 +16,10 @@ if (!MONGODB_URI) {
 
 dbConnect(MONGODB_URI)
    .then(() => {
-      app.use(express.json())
+      app.use(express.json());
+      app.use(cors({
+         origin: 'http://localhost:5173',
+      }));
       app.use('/api', mainRouter);
 
       app.listen(PORT, () => console.log(`Server up! Listening at http://localhost:${PORT}`));

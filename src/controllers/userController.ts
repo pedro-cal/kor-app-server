@@ -7,9 +7,13 @@ interface IUserData {
    imgUrl?: string;
 }
 
-export const createUser = async ({ username, email, imgUrl }: IUserData) => {
+export const signUser = async ({ username, email, imgUrl }: IUserData) => {
    try {
       if (!username && !email) throw new Error('At least username or email must be informed')
+
+      const existingUser = await User.findOne(username ? { username } : { email });
+      if (existingUser?.id) return existingUser;
+
       const userData = {
          id: uuidv4(),
          username,
@@ -64,7 +68,7 @@ export const fetchAllUsers = async () => {
 
 export const updateUserStatus = async (id: string, status: string) => {
    try {
-      const user = await User.findByIdAndUpdate(id, { status }, { new: true });
+      const user = await User.findOneAndUpdate({ id }, { status }, { new: true });
       if (!user) throw new Error('No such user found.');
       return user;
    } catch (error) {
