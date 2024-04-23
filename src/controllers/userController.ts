@@ -22,7 +22,7 @@ export const signUser = async ({ username, email, imgUrl }: IUserData) => {
       username,
       email,
       imgUrl,
-      status: 'Edit your first status',
+      status: 'Edit your first tagline',
     };
     const newUser = new User(userData);
     await newUser.save();
@@ -47,7 +47,7 @@ export const batchCreateUsers = async (users: IUserData[]) => {
         username,
         email,
         imgUrl,
-        status: 'Edit your first status',
+        status: 'Edit your first tagline',
       };
       const newUser = new User(userData);
       return newUser.save();
