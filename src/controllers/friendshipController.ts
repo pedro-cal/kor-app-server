@@ -1,6 +1,5 @@
 import Friendship from '../models/FriendshipModel';
 import { v4 as uuidv4 } from 'uuid';
-import User from '../models/UserModel';
 
 interface IFriendRequest {
    inviterId?: string;
