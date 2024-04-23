@@ -5,7 +5,7 @@ const userSchema = new mongoose.Schema({
   username: { type: String, unique: true, sparse: true },
   email: { type: String, unique: true, sparse: true },
   imgUrl: { type: String },
-  status: { type: String, default: 'offline' },
+  status: { type: String },
 });
 
 const User = mongoose.model('User', userSchema);

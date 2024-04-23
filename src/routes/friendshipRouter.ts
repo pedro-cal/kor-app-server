@@ -7,7 +7,7 @@ import {
 
 const router = Router();
 
-// create one
+// create a friend request
 router.post('/', async (req, res) => {
   try {
     const body = req.body;
@@ -17,38 +17,25 @@ router.post('/', async (req, res) => {
     res.status(400).json({ error: (error as Error).message });
   }
 });
-// get all
+// get all friends
 router.get('/:id', async (req, res) => {
   const { id } = req.params;
   if (typeof id !== 'string') {
-    // Handle the error or convert the type
     return res.status(400).send('Invalid parameter. Id should be a string.');
   }
-  const userConnections = await fetchUserFriendships(id);
-  res.status(200).json(userConnections);
+  const friends = await fetchUserFriendships(id);
+  res.status(200).json(friends);
 });
-// get one by id
-router.get('/:id', (req, res) => {
-  res.status(200).json({ message: 'users get ok' });
-});
+
 // update one by id
-router.put('/:id', async (req, res) => {
+router.put('/', async (req, res) => {
   try {
-    const { id } = req.params;
-    if (typeof id !== 'string') {
-      // Handle the error or convert the type
-      return res.status(400).send('Invalid parameter. Id should be a string.');
-    }
-    const { status } = req.body;
-    const updatedRequest = await updateFriendRequest(id, status);
+    const { inviterId, inviteeId, status } = req.body;
+    const updatedRequest = await updateFriendRequest(inviterId, inviteeId, status);
     res.status(200).json(updatedRequest);
   } catch (error) {
     res.status(400).json({ error: (error as Error).message });
   }
-});
-// delete one by id
-router.delete('/:id', (req, res) => {
-  res.status(200).json({ message: 'users get ok' });
 });
 
 export default router;
