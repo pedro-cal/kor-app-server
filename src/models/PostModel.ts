@@ -7,7 +7,7 @@ const { Schema, model } = mongoose;
 const postSchema = new Schema({
    createdAt: { type: Date, required: true, default: Date.now },
    statusText: { type: String, required: true },
-   user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+   user: { type: String, required: true },
 });
 
 const Post = model('Post', postSchema);

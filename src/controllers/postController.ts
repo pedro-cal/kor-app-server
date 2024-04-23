@@ -8,16 +8,23 @@ interface IPostData {
    statusText: string;
 }
 
+interface IFullPost {
+   id: string;
+   createdAt: string,
+   statusText: string,
+   user: any,
+}
+
 export const createPost = async ({ userId, statusText }: IPostData) => {
    try {
-      const userExists = await User.exists({ id: userId });
+      const userExists = await User.findOne({ id: userId });
       if (!userExists) {
          throw new Error('User does not exist');
       }
 
       const postData = {
          id: uuidv4(),
-         userId,
+         user: userId,
          statusText,
          createdAt: new Date(),
       };
@@ -31,19 +38,34 @@ export const createPost = async ({ userId, statusText }: IPostData) => {
 };
 
 export const fetchPostsByUserId = async (userId: string) => {
+   console.log("🚀 ~ fetchPostsByUserId ~ userId:", userId)
    try {
       const friends = await Friendship.find({
          $or: [{ inviterId: userId }, { inviteeId: userId }],
          status: 'accepted'
       });
       const friendIds = friends.map(f => f.inviterId === userId ? f.inviteeId : f.inviterId);
+      // console.log("🚀 ~ fetchPostsByUserId ~ friendIds:", friendIds)
       const posts = await Post.find({
-         'user.id': { $in: friendIds }
-      }).populate('user');
+         $or: [
+            { user: { $in: friendIds } },
+            { user: userId }
+         ]
+      });
+      // console.log("🚀 ~ fetchPostsByUserId ~ posts:", posts)
+      const postsWithUsers: any[] = await Promise.all(posts.map(async (p) => {
+         const postAuthorId = p.user;
+         const user = await User.findOne({ id: postAuthorId });
+         return {
+            ...p.toObject(),
+            user: user
+         };
+      }));
+      console.log("🚀 ~ constpostsWithUsers:any[]=posts.map ~ postsWithUsers:", postsWithUsers)
       if (!posts.length) {
          throw new Error('No posts found for this user or their friends');
       }
-      return posts.map(post => ({
+      return postsWithUsers.map(post => ({
          id: post.id,
          createdAt: post.createdAt,
          statusText: post.statusText,
